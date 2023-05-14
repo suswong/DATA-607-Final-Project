@@ -615,7 +615,7 @@ ggplot(race_by_borough, aes (x = factor(percentage), y = percentage, fill = PERP
 
 ```
 
-
+ 
 # Source
 
 1.  Interactive map <https://crimebythenumbers.com/choropleth-maps.html> <https://walker-data.com/census-r/mapping-census-data-with-r.html> <https://justinmorganwilliams.medium.com/basics-of-gis-mapping-with-r-using-grow-nyc-markets-75adcdd9b0> <https://cengel.github.io/R-spatial/mapping.html> <https://rpubs.com/schwarja209/NYC_hotspots>
