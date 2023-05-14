@@ -5,6 +5,7 @@ date: "2023-04-30"
 output: 
   html_document:
     theme: cerulean
+    code_folding: hide
     toc: true
     toc_float: true
 editor_options: 
@@ -20,14 +21,18 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Data {.tabset}
 
-Crime Data: Use publicly available crime data from the New York City Open Data.
-The data includes information such as the type of crime, the location of the crime, the date of the crime, information of perpetrators.
+Crime Data: Use publicly available arrest data from the New York City Open Data.
+The data includes information such as the type of crime, the location and date of the arrest, information of perpetrators.
+https://data.cityofnewyork.us/Public-Safety/NYPD-Arrests-Data-Historic-/8h9b-rp9u
 
 NY Borough Population Size: Webscrap population size of each NY borough from CityPopulation.
 The website contains the population of each NY borough according to census results.
 <https://www.citypopulation.de/en/usa/newyorkcity/>
 
 ## NYC Open Data
+
+There are over 5 million arrest recorded on "NYPD Arrests Data (Historical)" dataset. It contains every arrest made from 2006 to 2022. For this project, we will be using every arrest made from 2018 to 2022. Below is a breakdown of each column of the dataset, which was extracted from the NYC Open Data website. 
+
 
 | Column Name            | Description                                                                                                                                                          | Data Type |
 |-------------------|-------------------------------|----------------------|
@@ -96,6 +101,14 @@ Below are some of things that needs to be tidied for the analysis:
 
 -   Missing values
 
+### Remove Duplicates
+
+Each crime has a randomly generated persistent ID. They are recorded in the 'ARREST_KEY' column. Below is code that removes another duplicates based on the ID. 
+
+```{r}
+data_2018_2022 <- subset(data_2018_2022, !duplicated(data_2018_2022$ARREST_KEY))
+```
+
 ### Remove columns
 
 Use `str()` to check the structure of each dataset.
@@ -124,10 +137,10 @@ We do not need the following columns in our analysis:
 
 ```{r}
 str(data_2018_2022)
-
-library(dplyr)
-data_2018_2022 <- data_2018_2022 %>%
-  select(-ARREST_KEY,-KY_CD, -PD_CD, -LAW_CODE, -ARREST_PRECINCT, -JURISDICTION_CODE, -Community.Districts, -Borough.Boundaries, -City.Council.Districts, -Police.Precincts)
+# 
+# library(dplyr)
+# data_2018_2022 <- data_2018_2022 %>%
+#   select(-ARREST_KEY,-KY_CD, -PD_CD, -LAW_CODE, -ARREST_PRECINCT, -JURISDICTION_CODE, -Community.Districts, -Borough.Boundaries, -City.Council.Districts, -Police.Precincts)
 
 ```
 
@@ -137,7 +150,7 @@ The 'ARREST_BORO' column contains the borough in which the arrest was made.
 The 'LAW_CAT_CD' column contains the level of offense: felony, misdemeanor, violation.
 However, those values are in abbreviation.
 
-```{r}
+```{r, message=FALSE}
 data_2018_2022$ARREST_BORO[grep("B", data_2018_2022$ARREST_BORO)] <- "Bronx"
 data_2018_2022$ARREST_BORO[grep("K", data_2018_2022$ARREST_BORO)] <- "Brooklyn"
 data_2018_2022$ARREST_BORO[grep("M", data_2018_2022$ARREST_BORO)] <- "Manhattan"
@@ -153,14 +166,13 @@ data_2018_2022$LAW_CAT_CD[grep("V", data_2018_2022$LAW_CAT_CD)] <- "Violation"
 
 The 'ARREST_DATE' needs to be converted to date format.
 
-```{r}
+```{r, message=FALSE}
 library(lubridate)
 data_2018_2022$ARREST_DATE <- as.Date(data_2018_2022$ARREST_DATE, format = "%m/%d/%Y" )
 
 data_2018_2022$YEAR <- as.numeric(format(data_2018_2022$ARREST_DATE,'%Y'))
-data_2018_2022$MONTH <- as.numeric(format(data_2018_2022$ARREST_DATE,'%m'))
-
-data_2018_2022$WKDAY <-  wday(data_2018_2022$ARREST_DATE, label=TRUE)
+data_2018_2022$DAY <-  wday(data_2018_2022$ARREST_DATE, label=TRUE)
+data_2018_2022$MONTH <- months(data_2018_2022$ARREST_DATE, abbreviate=TRUE)
 ```
 
 ### Missing Values
@@ -174,10 +186,11 @@ colSums(is.na(data_2018_2022))
 data_2018_2022 <- data_2018_2022[complete.cases(data_2018_2022),]
 
 data_2018_2022 <- data_2018_2022 %>%
-  filter(OFNS_DESC !="") %>%
-  filter(OFNS_DESC != "(null)")
+  dplyr::filter(OFNS_DESC !="") %>%
+  dplyr::filter(OFNS_DESC != "(null)")
 
 colSums(is.na(data_2018_2022))
+
 ```
 
 ### Duplicates
@@ -185,7 +198,79 @@ colSums(is.na(data_2018_2022))
 Check for duplicates
 
 ```{r}
-distinct(data_2018_2022)
+dplyr::distinct(data_2018_2022)
+```
+
+### Group similar crimes
+
+There are 78 crime types. We can combine some of the crimes into one type as some are similar. For example there are crime type called "CHILD ABANDONMENT/NON SUPPORT" and "CHILD ABANDONMENT/NON SUPPORT 1". They could be mislabeled. Create a new column to group similar crime types. 
+
+```{r}
+table(data_2018_2022$OFNS_DESC)
+length(unique(table(data_2018_2022$OFNS_DESC)))
+
+# Copy 'OFNS_DESC' into a new column called 'crime'
+data_2018_2022$crime <- as.character(data_2018_2022$OFNS_DESC)
+
+### Group similar names (Maybe some values are misspelled)
+
+data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("ADMINISTRATIVE CODE","ADMINISTRATIVE CODES"),"ADMINISTRATIVE CODE", data_2018_2022$crime)
+
+data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("CHILD ABANDONMENT/NON SUPPORT","CHILD ABANDONMENT/NON SUPPORT 1"),"CHILD ABANDONMENT", data_2018_2022$crime)
+
+data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("CRIMINAL MISCHIEF & RELATED OF","CRIMINAL MISCHIEF & RELATED OFFENSES"),"CRIMINAL MISCHIEF & RELATED OFFENSES", data_2018_2022$crime)
+
+data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("DISRUPTION OF A RELIGIOUS SERV","DISRUPTION OF A RELIGIOUS SERVICE"),"DISRUPTION OF A RELIGIOUS SERVICE", data_2018_2022$crime)
+
+data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("HARASSMENT","HARRASSMENT 2"),"HARASSMENT", data_2018_2022$crime)
+
+data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("INTOXICATED & IMPAIRED DRIVING","INTOXICATED/IMPAIRED DRIVING"),"INTOXICATED & IMPAIRED DRIVING", data_2018_2022$crime)
+
+data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("HOMICIDE-NEGLIGENT,UNCLASSIFIE","HOMICIDE-NEGLIGENT,UNCLASSIFIED"),"HOMICIDE-NEGLIGENT,UNCLASSIFIED", data_2018_2022$crime)
+
+data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("KIDNAPPING","KIDNAPPING & RELATED OFFENSES", "KIDNAPPING AND RELATED OFFENSES"),"KIDNAPPING", data_2018_2022$crime)
+
+data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("MURDER & NON-NEGL. MANSLAUGHTE","MURDER & NON-NEGL. MANSLAUGHTER"),"MURDER & NON-NEGL. MANSLAUGHTER", data_2018_2022$crime)
+
+data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("POSSESSION OF STOLEN PROPERTY","POSSESSION OF STOLEN PROPERTY 5"),"POSSESSION OF STOLEN PROPERTY", data_2018_2022$crime)
+
+data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("OTHER STATE LAWS (NON PENAL LAW)","OTHER STATE LAWS (NON PENAL LA"),"OTHER STATE LAWS (NON PENAL LAW)", data_2018_2022$crime)
+
+data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("UNAUTHORIZED USE OF A VEHICLE","UNAUTHORIZED USE OF A VEHICLE 3 (UUV)"),"UNAUTHORIZED USE OF A VEHICLE", data_2018_2022$crime)
+
+data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("LOITERING","LOITERING FOR DRUG PURPOSES","LOITERING/GAMBLING (CARDS, DIC", "LOITERING/GAMBLING (CARDS, DICE, ETC)"),"LOITERING", data_2018_2022$crime)
+
+data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("OFFENSES AGAINST PUBLIC ADMINISTRATION","OFFENSES AGAINST PUBLIC ADMINI"),"OFFENSES AGAINST PUBLIC ADMINISTRATION", data_2018_2022$crime)
+
+data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("OTHER OFFENSES RELATED TO THEF","OTHER OFFENSES RELATED TO THEFT"),"OTHER OFFENSES RELATED TO THEFT", data_2018_2022$crime)
+
+data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("OFF. AGNST PUB ORD SENSBLTY & RGHTS TO PRIV","OFF. AGNST PUB ORD SENSBLTY &"),"OFF. AGNST PUB ORD SENSBLTY & RGHTS TO PRIV", data_2018_2022$crime)
+
+# ######## Grouping similar crimes
+# 
+# data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("ASSAULT 3 & RELATED OFFENSES","FELONY ASSAULT"),"ASSAULT", data_2018_2022$crime)
+# 
+# data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("BURGLAR'S TOOLS","BURGLARY"),"BURGLARY", data_2018_2022$crime)
+# 
+# data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("FELONY SEX CRIMES","FORCIBLE TOUCHING","PROSTITUTION & RELATED OFFENSES", "SEX CRIMES"),"SEXUAL", data_2018_2022$crime)
+# 
+# data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("OTHER OFFENSES RELATED TO THEF","OTHER OFFENSES RELATED TO THEFT","THEFT OF SERVICES", "POSSESSION OF STOLEN PROPERTY"),"THEFT", data_2018_2022$crime)
+# 
+# data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("GRAND LARCENY", "GRAND LARCENY OF MOTOR VEHICLE"),"GRAND LARCENY", data_2018_2022$crime)
+# 
+
+# 
+# data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("FRAUDS","FRAUDULENT ACCOSTING","OFFENSES INVOLVING FRAUD", "FORGERY"),"FRAUD", data_2018_2022$crime)
+# 
+# data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("CANNABIS RELATED OFFENSES","DANGEROUS DRUGS"),"DRUG", data_2018_2022$crime)
+# 
+# data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("OTHER STATE LAWS","OTHER STATE LAWS (NON PENAL LAW)"),"OTHER STATE LAWS", data_2018_2022$crime)
+# 
+# data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("HOMICIDE-NEGLIGENT-VEHICLE","HOMICIDE-NEGLIGENT,UNCLASSIFIED"),"HOMICIDE-NEGLIGENT", data_2018_2022$crime)
+# 
+# data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("VEHICLE AND TRAFFIC LAWS","UNAUTHORIZED USE OF A VEHICLE", "OTHER TRAFFIC INFRACTION", "INTOXICATED & IMPAIRED DRIVING", "MOVING INFRACTIONS", "PARKING OFFENSES"),"VEHICLE AND TRAFFIC LAWS", data_2018_2022$crime)
+
+
 ```
 
 ## NY Population by Borough {.tabset}
@@ -224,12 +309,13 @@ population_boro$Borough[grep("Manhattan", population_boro$Borough)] <- "Manhatta
 str(population_boro)
 
 population_boro$Population_Census_2020 <- as.numeric(gsub(",","",population_boro$Population_Census_2020))
-
 ```
 
 # Interactive Map Visusalization
 
-```{r}
+Here we have an interactive map of all arrests made in New York from 2018-2022. 
+
+```{r, message=FALSE}
 library(dplyr)
 library(leaflet)
 library(RColorBrewer)
@@ -253,8 +339,8 @@ arrests_map
 
 # Daily Crimes in New York from 2018 – 2022
 
-Overall, there is a decreaase in the number of crimes from 2018 to mid 2020 and a increase in the number of crimes from mid 2020 to end of 2022. 
-```{r}
+Overall, there is a decrease in the number of crimes from 2018 to mid 2020 and a increase in the number of crimes from mid 2020 to end of 2022. 
+```{r, message=FALSE}
 crime_daily <- data_2018_2022 %>%
   group_by(ARREST_DATE) %>%
   summarize(count = n()) %>%
@@ -271,32 +357,118 @@ ggplot(crime_daily, aes(x = ARREST_DATE, y = count)) +
 
 ```
 
+## Trends in Crime of During the Week Per Year
+
+Based on the graph, there seems to be more crimes in the middle of the week for each year. In each year, the number of arrests peaks on Wednesday. 
+
+```{r, message=FALSE}
+library(gganimate)
+library(gifski)
+
+days_trend <- data_2018_2022 %>%
+  group_by(DAY,YEAR) %>%
+  summarise(count = n())
+
+p <- days_trend %>%
+  group_by(YEAR) %>%
+    ggplot(., aes(x = DAY, y = count, fill = DAY)) + 
+    geom_bar(stat = "identity", show.legend = FALSE) +
+    labs(title = "Year: {closest_state}") +
+    xlab("Day of week") +
+    ylab("Number of crimes")
+
+a <- p +
+    transition_states(YEAR, wrap = FALSE)
+animate(a, nframes = 5, fps = 0.5)
+
+```
+
+## Trends in Crime for Months of Each Year
+
+Year 2020 crime trends differs the most compared to the other years. It may be related to the COVID outbreak in 2020 which led to a NY lockdown in March. 
+
+```{r, message=FALSE, warning=FALSE}
+month_trend <- data_2018_2022 %>%
+  dplyr::group_by(MONTH,YEAR) %>%
+  dplyr::summarise(count = n())
+
+p <- month_trend %>%
+  group_by(YEAR) %>%
+    ggplot(., aes(x = reorder(MONTH, MONTH), y = count, fill = MONTH)) + 
+    geom_bar(stat = "identity", show.legend = FALSE) +
+    labs(title = "Year: {closest_state}") +
+    xlab("Month") +
+    ylab("Number of crimes")
+
+a <- p +
+    transition_states(YEAR, wrap = FALSE)
+animate(a, nframes = 5, fps = 0.5)
+```
+
 # Top 10 Offenses in NY {.tabset}
+
 
 ## Datatable
 
 Out of all the offenses, assault 3 & related offenses is the highest. 
-```{r}
+```{r, message=FALSE}
 library(DT)
+library(dplyr)
 offense <- data_2018_2022 %>%
-  group_by(OFNS_DESC) %>%
-  summarise(count = n()) %>%
-  arrange(desc(count))
+  dplyr::group_by(crime) %>%
+  dplyr::summarise(total = n()) 
+
+offense2 <- data_2018_2022 %>%
+  dplyr::group_by(crime, ARREST_BORO) %>%
+  dplyr::summarise(count = n()) 
+  
+library(tidyr)
+offense2 <- offense2 %>%
+  pivot_wider(names_from = ARREST_BORO, values_from = count)
+
+offense <- merge(x=offense2,y=offense, 
+             by="crime", all.x=TRUE)
 
 datatable(offense)
 ```
 
+
 ## Visualization
 
-```{r}
+```{r, message=FALSE}
 library(ggplot2)
 
 offense %>% 
-    arrange(desc(count)) %>%
-    slice(1:10) %>%
-    ggplot(., aes(x=reorder(OFNS_DESC, count), y=count))+
-              geom_bar(stat='identity', fill="blue") + coord_flip() + xlab("Offense")+ ylab("Count") +  
+    arrange(desc(total)) %>%
+    slice(1:15) %>%
+    ggplot(., aes(x=reorder(crime, total), y=total))+
+              geom_bar(stat='identity', fill="lightblue") + coord_flip() + xlab("Offense")+ ylab("Count") +  
   ggtitle("Top 10 Offense in NY")
+```
+
+### Number of Arrests for Top 10 Crimes Daily Per Year
+
+```{r, message=FALSE}
+qw <- data_2018_2022 %>%
+  filter(crime %in% c("ASSAULT 3 & RELATED OFFENSES","PETIT LARCENY","DANGEROUS DRUGS","FELONY ASSAULT","MISCELLANEOUS PENAL LAW" ,"VEHICLE AND TRAFFIC LAWS", "CRIMINAL MISCHIEF & RELATED OFFENSES" ,"ROBBERY", "GRAND LARCENY" , "DANGEROUS WEAPONS"))
+
+temp <- qw %>%
+  dplyr::group_by(crime, DAY, YEAR)%>%
+  dplyr::summarise(count = n())
+
+temp2 <- temp %>%
+  ggplot(., aes(x= crime, y= DAY, fill= count)) + 
+  geom_tile(aes(fill= count)) +
+scale_x_discrete("Crime", expand = c(0,0)) + 
+  scale_y_discrete("Day of week", expand = c(0,-2)) + 
+  scale_fill_gradient("Number of crimes", low = "white", high = "steelblue") +
+theme_bw() + ggtitle("Year: {closest_state}") +
+theme(panel.grid.major = element_line(colour = NA), panel.grid.minor = element_line(colour = NA)) + theme(axis.text.x=element_text(angle=45,hjust=1)) 
+
+  
+a <- temp2 +
+    transition_states(YEAR, wrap = FALSE)
+animate(a, nframes = 5, fps = 0.5)
 ```
 
 # Crime Rate by Borough and Year {.tabset}
@@ -306,11 +478,13 @@ This will allow us to compare crime rates on an equal basis across different bor
 
 ## Datatable
 
-```{r}
+Below is a table of the crime rate per 1000 people for each borough and year. In all years except 2019, Queens has the lowest crime rate per 1000 people. Bronx has the highest crime per 1000 people for all years except in 2021. 
+
+```{r, message=FALSE}
 # Count the number of arrests in each borough by year
 borough_by_year <- data_2018_2022 %>%
-  group_by(YEAR, ARREST_BORO) %>%
-  summarise(count = n()) 
+  dplyr::group_by(YEAR, ARREST_BORO) %>%
+  dplyr::summarise(count = n()) 
 
 # Create a new column for the population size for each borough
 borough_by_year$population <- 
@@ -331,42 +505,19 @@ datatable(borough_by_year,options = list(pageLength = 5, dom = 'tip'))
 
 ## Visualization
 
-```{r}
-ggplot(borough_by_year, aes(fill= Borough, y= crime_rate, x=Year)) + 
-  ggtitle("Crime Rate Per 1000 People") + theme(plot.title=element_text(hjust=0.5))+
-  theme(axis.text.x=element_text(angle=45,hjust=1)) +
-    geom_bar(position="dodge", stat="identity") 
-# + scale_y_continuous(labels = scales::percent) 
-```
+In all years except 2019, Queens has the lowest crime rate per 1000 people. Bronx has the highest crime per 1000 people for all years except in 2021. 
 
-```{r}
-ggplot(borough_by_year, aes(fill= reorder(Borough, crime_rate), y= crime_rate, x=Year)) + 
-  ggtitle("Crime Rate Per 1000 People") + theme(plot.title=element_text(hjust=0.5))+
-  theme(axis.text.x=element_text(angle=45,hjust=1)) +
-    geom_bar(position="dodge", stat="identity") 
-# + scale_y_continuous(labels = scales::percent) 
+All of the boroughs follow a similar trend of a decrease of crime rate from 2018 to 2020 and an overall increase after. 
 
-```
-
-```{r}
-ggplot(borough_by_year, aes (x = factor(crime_rate), y = crime_rate, fill = Borough))+
-    geom_bar(stat="identity", na.rm = TRUE)+
-    facet_wrap(~Year, ncol =3, scales = "free_x", drop = TRUE) +
-    theme(
-        axis.text.x = element_blank(),
-        axis.ticks.x = element_blank()
-    )
-```
-
-```{r}
+```{r, message=FALSE, warning=FALSE}
 ggplot(borough_by_year, aes(x = Year, y = crime_rate, colour = Borough)) +
-  geom_smooth() + scale_y_continuous(labels = function(x) format(x, scientific = FALSE)) 
+  geom_smooth() + scale_y_continuous(labels = function(x) format(x, scientific = FALSE)) + ggtitle("Crime Rate Per 1000 People")
 ```
-
 
 
 ## Top Offense Per Borough
-```{r}
+
+```{r, message=FALSE}
 crime_by_borough <- data_2018_2022 %>%
   group_by(OFNS_DESC,ARREST_BORO) %>%
   summarise(count = n()) 
@@ -386,13 +537,12 @@ crime_by_borough <- crime_by_borough %>%
   
 ```
 
-```{r}
+```{r, message=FALSE}
 #install.packages("gganimate")
 #install.packages("gifski")
 
 library(gganimate)
 library(gifski)
-
 
 p <- crime_by_borough %>%
   arrange(desc(offense_rate)) %>%
@@ -405,17 +555,18 @@ p <- crime_by_borough %>%
     labs(title = "") +
     coord_flip()  + 
     xlab("Offense") +
-    ylab("Offense Rate")
+    ylab("Offense Rate") +
+  ggtitle("Borough: {closest_state}")
 
 a <- p +
     transition_states(ARREST_BORO, wrap = FALSE)
-animate(a, nframes = 5, fps = 1)
+animate(a, nframes = 5, fps = 0.5)
 ```
 
 # Demographic of Perpetraitor in Each Borough
 
 ## Gender
-```{r}
+```{r, message=FALSE}
 gender <- data_2018_2022 %>%
   group_by(PERP_SEX, ARREST_BORO)%>%
   summarise(count = n())
@@ -432,24 +583,38 @@ ggplot(gender, aes (x = factor(percentage), y = percentage, fill = PERP_SEX))+
         axis.ticks.x = element_blank()
     )
 ```
-## Race
-```{r}
-race <- data_2018_2022 %>%
-  group_by(PERP_RACE, ARREST_BORO)%>%
-  summarise(count = n())
 
-race <- race %>%
-  group_by(ARREST_BORO) %>%
-  mutate(percentage = (count/sum(count)))
+## Race by Borough
 
-ggplot(race, aes (x = factor(percentage), y = percentage, fill = PERP_RACE))+
+```{r, message=FALSE}
+race_by_borough <- data_2018_2022 %>%
+  dplyr::group_by(PERP_RACE, ARREST_BORO)%>%
+  dplyr::summarise(count = n())
+
+race_by_borough <- race_by_borough %>%
+  dplyr::group_by(ARREST_BORO) %>%
+  dplyr::mutate(percentage = (count/sum(count)))%>%
+  dplyr::mutate(labels = scales::percent(percentage ))
+
+
+ggplot(race_by_borough, aes (x = factor(percentage), y = percentage, fill = PERP_RACE))+
     geom_bar(stat="identity", na.rm = TRUE)+
     facet_wrap(~ARREST_BORO, ncol =3, scales = "free_x", drop = TRUE) +
     theme(
         axis.text.x = element_blank(),
-        axis.ticks.x = element_blank()
+        axis.ticks.x = element_blank() 
     )
+
+
+# ggplot(data=race_by_borough, aes(x=" ", y=percentage, group=PERP_RACE, colour=PERP_RACE, fill=PERP_RACE)) +
+#          geom_bar(width = 1, stat = "identity") +
+#          coord_polar("y", start=0) + 
+#    geom_text(aes(label = labels),
+#             position = position_stack(vjust = 0.5)) +
+#          facet_grid(.~ ARREST_BORO) +theme_void()
+
 ```
+
 
 # Source
 
