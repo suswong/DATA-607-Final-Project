@@ -603,20 +603,20 @@ temp100  %>%
 
 ```
 
-### Trends of Top 10 Crimes in Brooklyn
+### Trends of Top 10 Crimes in Staten Island
 
 ```{r, warning=FALSE, message=FALSE}
 temp100  %>%
-  filter(ARREST_BORO=="Brooklyn") %>%
+  filter(ARREST_BORO=="Staten Island") %>%
   ggplot(aes(ARREST_DATE, total, colour = crime)) +
   geom_smooth()
 ```
 
-### Trends of Top 10 Crimes in Queen
+### Trends of Top 10 Crimes in Queens
 
 ```{r, warning=FALSE, message=FALSE}
 temp100  %>%
-  filter(ARREST_BORO=="Queen") %>%
+  filter(ARREST_BORO=="Queens") %>%
   ggplot(aes(ARREST_DATE, total, colour = crime)) +
   geom_smooth()
 ```
@@ -705,6 +705,7 @@ datatable(arrests_combined2018_2022)
 # Conclusion 
 
 **Trends**
+
 Overall, there is a decrease in the number of arrests from 2018 to mid 2020 and a increase in the number of arrests from mid 2020 to end of 2022.
 
 There seems to be more arrests in the middle of the week for each year. In each year, the total number of arrests peaks on Wednesday, which can mean there are higher activity of crimes during the middle of the week. 
@@ -713,7 +714,14 @@ The top 3 highest crime type based on the number of arrests are: assault, petit 
 
 **Crime Rate**
 The crime rate for each borough is calculated by dividing the number of arrests in each borough by its population. This will allow us to compare crime rates on an equal basis across different boroughs.
-In all years except 2019, Queens has the lowest crime rate per 100000 people. Bronx has the highest crime per 10000 people for all years except in 2021.
+In all years except 2019, Queens has the lowest crime rate per 100000 people. Bronx has the highest crime per 10000 people for all years except in 2021. Comparing the crime rate in 2018 and 2022, there is still a decrease in crime rate in all borough. Brooklyn has the highest percentage decrease of crime rate. However, it was noted that there was a trend of decrease in the number of arrests from 2018 to mid 2020 and a increase in the number of arrests from mid 2020 to end of 2022. So comparing the crime rate in 2021 and 2022, all borough shows an increase of crime rate. Bronx has the highest percentage of increase in crime rate. 
+
+
+**Limitations**
+There is only data of New York States Census for every 10 years. The last recorded data was 2020. To normalized the crime rate, population data was used to calculate the crime rate. If the population size was available for each year, a more accurate crime rate can be calculated. 
+
+**Recommendation**
+
 
 # Source
 
