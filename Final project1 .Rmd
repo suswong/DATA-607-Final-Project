@@ -19,6 +19,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Introduction
 
+The safety of the neighborhood is one of the key factors that people consider when choosing a where to live. The objective of this project is to explore the trends of crime over the period of 2018-2022.
+
 # Data {.tabset}
 
 Crime Data: Use publicly available arrest data from the New York City Open Data.
@@ -171,6 +173,7 @@ library(lubridate)
 data_2018_2022$ARREST_DATE <- as.Date(data_2018_2022$ARREST_DATE, format = "%m/%d/%Y" )
 
 data_2018_2022$YEAR <- as.numeric(format(data_2018_2022$ARREST_DATE,'%Y'))
+data_2018_2022$month <- as.numeric(format(data_2018_2022$ARREST_DATE,'%m'))
 data_2018_2022$DAY <-  wday(data_2018_2022$ARREST_DATE, label=TRUE)
 data_2018_2022$MONTH <- months(data_2018_2022$ARREST_DATE, abbreviate=TRUE)
 ```
@@ -389,12 +392,12 @@ Year 2020 crime trends differs the most compared to the other years. It may be r
 
 ```{r, message=FALSE, warning=FALSE}
 month_trend <- data_2018_2022 %>%
-  dplyr::group_by(MONTH,YEAR) %>%
-  dplyr::summarise(count = n())
+  dplyr::group_by(month,YEAR) %>%
+  dplyr::summarise(count = n()) 
 
 p <- month_trend %>%
   group_by(YEAR) %>%
-    ggplot(., aes(x = reorder(MONTH, MONTH), y = count, fill = MONTH)) + 
+    ggplot(., aes(x = reorder(month, month), y = count, fill = month)) + 
     geom_bar(stat = "identity", show.legend = FALSE) +
     labs(title = "Year: {closest_state}") +
     xlab("Month") +
@@ -469,6 +472,10 @@ theme(panel.grid.major = element_line(colour = NA), panel.grid.minor = element_l
 a <- temp2 +
     transition_states(YEAR, wrap = FALSE)
 animate(a, nframes = 5, fps = 0.5)
+```
+
+```{r}
+
 ```
 
 # Crime Rate by Borough and Year {.tabset}
@@ -695,8 +702,18 @@ arrests_combined2018_2022$`% Change from 2021 to 2022` <- (arrests_combined2018_
 
 datatable(arrests_combined2018_2022)
 ```
+# Conclusion 
 
+**Trends**
+Overall, there is a decrease in the number of arrests from 2018 to mid 2020 and a increase in the number of arrests from mid 2020 to end of 2022.
 
+There seems to be more arrests in the middle of the week for each year. In each year, the total number of arrests peaks on Wednesday, which can mean there are higher activity of crimes during the middle of the week. 
+
+The top 3 highest crime type based on the number of arrests are: assault, petit larceny, and drug. 
+
+**Crime Rate**
+The crime rate for each borough is calculated by dividing the number of arrests in each borough by its population. This will allow us to compare crime rates on an equal basis across different boroughs.
+In all years except 2019, Queens has the lowest crime rate per 100000 people. Bronx has the highest crime per 10000 people for all years except in 2021.
 
 # Source
 
