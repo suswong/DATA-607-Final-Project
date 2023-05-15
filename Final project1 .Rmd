@@ -246,31 +246,31 @@ data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("OTHER OFFENSES RELAT
 
 data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("OFF. AGNST PUB ORD SENSBLTY & RGHTS TO PRIV","OFF. AGNST PUB ORD SENSBLTY &"),"OFF. AGNST PUB ORD SENSBLTY & RGHTS TO PRIV", data_2018_2022$crime)
 
-# ######## Grouping similar crimes
-# 
-# data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("ASSAULT 3 & RELATED OFFENSES","FELONY ASSAULT"),"ASSAULT", data_2018_2022$crime)
-# 
-# data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("BURGLAR'S TOOLS","BURGLARY"),"BURGLARY", data_2018_2022$crime)
-# 
-# data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("FELONY SEX CRIMES","FORCIBLE TOUCHING","PROSTITUTION & RELATED OFFENSES", "SEX CRIMES"),"SEXUAL", data_2018_2022$crime)
-# 
-# data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("OTHER OFFENSES RELATED TO THEF","OTHER OFFENSES RELATED TO THEFT","THEFT OF SERVICES", "POSSESSION OF STOLEN PROPERTY"),"THEFT", data_2018_2022$crime)
-# 
-# data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("GRAND LARCENY", "GRAND LARCENY OF MOTOR VEHICLE"),"GRAND LARCENY", data_2018_2022$crime)
-# 
+######## Grouping similar crimes
 
-# 
-# data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("FRAUDS","FRAUDULENT ACCOSTING","OFFENSES INVOLVING FRAUD", "FORGERY"),"FRAUD", data_2018_2022$crime)
-# 
-# data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("CANNABIS RELATED OFFENSES","DANGEROUS DRUGS"),"DRUG", data_2018_2022$crime)
-# 
-# data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("OTHER STATE LAWS","OTHER STATE LAWS (NON PENAL LAW)"),"OTHER STATE LAWS", data_2018_2022$crime)
-# 
-# data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("HOMICIDE-NEGLIGENT-VEHICLE","HOMICIDE-NEGLIGENT,UNCLASSIFIED"),"HOMICIDE-NEGLIGENT", data_2018_2022$crime)
-# 
-# data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("VEHICLE AND TRAFFIC LAWS","UNAUTHORIZED USE OF A VEHICLE", "OTHER TRAFFIC INFRACTION", "INTOXICATED & IMPAIRED DRIVING", "MOVING INFRACTIONS", "PARKING OFFENSES"),"VEHICLE AND TRAFFIC LAWS", data_2018_2022$crime)
+data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("ASSAULT 3 & RELATED OFFENSES","FELONY ASSAULT"),"ASSAULT", data_2018_2022$crime)
+
+data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("BURGLAR'S TOOLS","BURGLARY"),"BURGLARY", data_2018_2022$crime)
+
+data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("FELONY SEX CRIMES","FORCIBLE TOUCHING","PROSTITUTION & RELATED OFFENSES", "SEX CRIMES"),"SEXUAL OFFENSES", data_2018_2022$crime)
+
+data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("OTHER OFFENSES RELATED TO THEF","OTHER OFFENSES RELATED TO THEFT","THEFT OF SERVICES", "POSSESSION OF STOLEN PROPERTY"),"THEFT", data_2018_2022$crime)
+
+data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("GRAND LARCENY", "GRAND LARCENY OF MOTOR VEHICLE"),"GRAND LARCENY", data_2018_2022$crime)
 
 
+data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("FRAUDS","FRAUDULENT ACCOSTING","OFFENSES INVOLVING FRAUD", "FORGERY"),"FRAUD", data_2018_2022$crime)
+
+data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("CANNABIS RELATED OFFENSES","DANGEROUS DRUGS"),"DRUG", data_2018_2022$crime)
+
+data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("OTHER STATE LAWS","OTHER STATE LAWS (NON PENAL LAW)"),"OTHER STATE LAWS", data_2018_2022$crime)
+
+data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("HOMICIDE-NEGLIGENT-VEHICLE","HOMICIDE-NEGLIGENT,UNCLASSIFIED"),"HOMICIDE-NEGLIGENT", data_2018_2022$crime)
+
+data_2018_2022$crime <- ifelse(data_2018_2022$crime %in% c("VEHICLE AND TRAFFIC LAWS","UNAUTHORIZED USE OF A VEHICLE", "OTHER TRAFFIC INFRACTION", "INTOXICATED & IMPAIRED DRIVING", "MOVING INFRACTIONS", "PARKING OFFENSES"),"VEHICLE AND TRAFFIC LAWS", data_2018_2022$crime)
+
+table(data_2018_2022$crime)
+length(unique(table(data_2018_2022$crime)))
 ```
 
 ## NY Population by Borough {.tabset}
@@ -426,10 +426,10 @@ library(tidyr)
 offense2 <- offense2 %>%
   pivot_wider(names_from = ARREST_BORO, values_from = count)
 
-offense <- merge(x=offense2,y=offense, 
+offense3 <- merge(x=offense2,y=offense, 
              by="crime", all.x=TRUE)
 
-datatable(offense)
+datatable(offense3)
 ```
 
 
@@ -450,7 +450,7 @@ offense %>%
 
 ```{r, message=FALSE}
 qw <- data_2018_2022 %>%
-  filter(crime %in% c("ASSAULT 3 & RELATED OFFENSES","PETIT LARCENY","DANGEROUS DRUGS","FELONY ASSAULT","MISCELLANEOUS PENAL LAW" ,"VEHICLE AND TRAFFIC LAWS", "CRIMINAL MISCHIEF & RELATED OFFENSES" ,"ROBBERY", "GRAND LARCENY" , "DANGEROUS WEAPONS"))
+  filter(crime %in% c("ASSAULT","PETIT LARCENY","DRUG","FELONY ASSAULT","MISCELLANEOUS PENAL LAW" ,"VEHICLE AND TRAFFIC LAWS", "CRIMINAL MISCHIEF & RELATED OFFENSES" ,"ROBBERY","GRAND LARCENY" , "DANGEROUS WEAPONS","FRAUD"))
 
 temp <- qw %>%
   dplyr::group_by(crime, DAY, YEAR)%>%
@@ -478,7 +478,7 @@ This will allow us to compare crime rates on an equal basis across different bor
 
 ## Datatable
 
-Below is a table of the crime rate per 1000 people for each borough and year. In all years except 2019, Queens has the lowest crime rate per 1000 people. Bronx has the highest crime per 1000 people for all years except in 2021. 
+Below is a table of the crime rate per 100000 people for each borough and year. In all years except 2019, Queens has the lowest crime rate per 100000 people. Bronx has the highest crime per 10000 people for all years except in 2021. 
 
 ```{r, message=FALSE}
 # Count the number of arrests in each borough by year
@@ -498,24 +498,24 @@ colnames(borough_by_year) <- c("Year" ,"Borough", "count", "population")
 
 # Calculate the crime rate per year and borough
 borough_by_year <- borough_by_year %>%
-  mutate(crime_rate = (count/population)*1000)
+  mutate(crime_rate = (count/population)*10000)
 
 datatable(borough_by_year,options = list(pageLength = 5, dom = 'tip'))
 ```
 
 ## Visualization
 
-In all years except 2019, Queens has the lowest crime rate per 1000 people. Bronx has the highest crime per 1000 people for all years except in 2021. 
+In all years except 2019, Queens has the lowest crime rate per 10000 people. Bronx has the highest crime per 10000 people for all years except in 2021. 
 
 All of the boroughs follow a similar trend of a decrease of crime rate from 2018 to 2020 and an overall increase after. 
 
 ```{r, message=FALSE, warning=FALSE}
 ggplot(borough_by_year, aes(x = Year, y = crime_rate, colour = Borough)) +
-  geom_smooth() + scale_y_continuous(labels = function(x) format(x, scientific = FALSE)) + ggtitle("Crime Rate Per 1000 People")
+  geom_smooth() + scale_y_continuous(labels = function(x) format(x, scientific = FALSE)) + ggtitle("Crime Rate Per 10000 People")
 ```
 
 
-## Top Offense Per Borough
+## Top Offense Per Borough {.tabset}
 
 ```{r, message=FALSE}
 crime_by_borough <- data_2018_2022 %>%
@@ -563,6 +563,57 @@ a <- p +
 animate(a, nframes = 5, fps = 0.5)
 ```
 
+### Trends of Top 10 Crimes in Manhattan
+
+```{r, warning=FALSE, message=FALSE}
+temp100 <- qw %>%
+  group_by(ARREST_DATE, ARREST_BORO, crime)%>%
+  summarise(total = n())
+
+temp100  %>%
+  filter(ARREST_BORO=="Manhattan") %>%
+  ggplot(aes(ARREST_DATE, total, colour = crime)) +
+  geom_smooth()
+```
+
+### Trends of Top 10 Crimes in Brooklyn
+
+```{r, warning=FALSE, message=FALSE}
+temp100  %>%
+  filter(ARREST_BORO=="Brooklyn") %>%
+  ggplot(aes(ARREST_DATE, total, colour = crime)) +
+  geom_smooth()
+```
+
+### Trends of Top 10 Crimes in Bronx
+
+```{r, warning=FALSE, message=FALSE}
+
+temp100  %>%
+  filter(ARREST_BORO=="Bronx") %>%
+  ggplot(aes(ARREST_DATE, total, colour = crime)) +
+  geom_smooth()
+
+```
+
+### Trends of Top 10 Crimes in Brooklyn
+
+```{r, warning=FALSE, message=FALSE}
+temp100  %>%
+  filter(ARREST_BORO=="Brooklyn") %>%
+  ggplot(aes(ARREST_DATE, total, colour = crime)) +
+  geom_smooth()
+```
+
+### Trends of Top 10 Crimes in Queen
+
+```{r, warning=FALSE, message=FALSE}
+temp100  %>%
+  filter(ARREST_BORO=="Queen") %>%
+  ggplot(aes(ARREST_DATE, total, colour = crime)) +
+  geom_smooth()
+```
+
 # Demographic of Perpetraitor in Each Borough
 
 ## Gender
@@ -582,6 +633,7 @@ ggplot(gender, aes (x = factor(percentage), y = percentage, fill = PERP_SEX))+
         axis.text.x = element_blank(),
         axis.ticks.x = element_blank()
     )
+
 ```
 
 ## Race by Borough
@@ -615,7 +667,37 @@ ggplot(race_by_borough, aes (x = factor(percentage), y = percentage, fill = PERP
 
 ```
 
- 
+# Changes in Crime Rate from 2018 - 2022 {.tabset}
+
+```{r}
+arrests_2018 <- borough_by_year %>%
+  filter(Year == 2018)
+arrests_2021 <- borough_by_year %>%
+  filter(Year == 2021)
+arrests_2022 <- borough_by_year %>%
+  filter(Year == 2022)
+
+arrests_combined2018_2022 <- merge(arrests_2018, arrests_2022, by = c("Borough"), all = TRUE)
+
+arrests_combined2018_2022 <- arrests_combined2018_2022[,-2]
+arrests_combined2018_2022 <- arrests_combined2018_2022[,-2]
+arrests_combined2018_2022 <- arrests_combined2018_2022[,-2]
+arrests_combined2018_2022 <- arrests_combined2018_2022[,-3]
+arrests_combined2018_2022 <- arrests_combined2018_2022[,-3]
+arrests_combined2018_2022 <- arrests_combined2018_2022[,-3]
+arrests_combined2018_2022$Arrests_2021 <- arrests_2021$crime_rate
+
+names(arrests_combined2018_2022) <- c("BORO","Arrests 2018", "Arrests 2022", "Arrests 2021")
+
+arrests_combined2018_2022$`% Change from 2018 to 2022` <- (arrests_combined2018_2022$`Arrests 2022` - arrests_combined2018_2022$`Arrests 2018`) / arrests_combined2018_2022$`Arrests 2018` * 100
+
+arrests_combined2018_2022$`% Change from 2021 to 2022` <- (arrests_combined2018_2022$`Arrests 2022` - arrests_combined2018_2022$`Arrests 2021`) / arrests_combined2018_2022$`Arrests 2021` * 100
+
+datatable(arrests_combined2018_2022)
+```
+
+
+
 # Source
 
 1.  Interactive map <https://crimebythenumbers.com/choropleth-maps.html> <https://walker-data.com/census-r/mapping-census-data-with-r.html> <https://justinmorganwilliams.medium.com/basics-of-gis-mapping-with-r-using-grow-nyc-markets-75adcdd9b0> <https://cengel.github.io/R-spatial/mapping.html> <https://rpubs.com/schwarja209/NYC_hotspots>
