@@ -19,13 +19,13 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Introduction
 
-The safety of the neighborhood is one of the key factors that people consider when choosing a where to live. The objective of this project is to explore the trends of crime over the period of 2018-2022.
+The safety of the neighborhood is one of the key factors that people consider when choosing a where to live.The objective of this project is to explore the trends of crime over the period of 2018-2022.
 
 # Data {.tabset}
 
 Crime Data: Use publicly available arrest data from the New York City Open Data.
 The data includes information such as the type of crime, the location and date of the arrest, information of perpetrators.
-https://data.cityofnewyork.us/Public-Safety/NYPD-Arrests-Data-Historic-/8h9b-rp9u
+<https://data.cityofnewyork.us/Public-Safety/NYPD-Arrests-Data-Historic-/8h9b-rp9u>
 
 NY Borough Population Size: Webscrap population size of each NY borough from CityPopulation.
 The website contains the population of each NY borough according to census results.
@@ -33,35 +33,62 @@ The website contains the population of each NY borough according to census resul
 
 ## NYC Open Data
 
-There are over 5 million arrest recorded on "NYPD Arrests Data (Historical)" dataset. It contains every arrest made from 2006 to 2022. For this project, we will be using every arrest made from 2018 to 2022. Below is a breakdown of each column of the dataset, which was extracted from the NYC Open Data website. 
+There are over 5 million arrest recorded on "NYPD Arrests Data (Historical)" dataset.
+It contains every arrest made from 2006 to 2022.
+For this project, we will be using every arrest made from 2018 to 2022.
+Below is a breakdown of each column of the dataset, which was extracted from the NYC Open Data website.
 
-
-| Column Name            | Description                                                                                                                                                          | Data Type |
-|-------------------|-------------------------------|----------------------|
-| ARREST_KEY             | Randomly generated persistent ID for each arrest                                                                                                                     | int       |
-| ARREST_DATE            | Exact date of arrest for the reported event                                                                                                                          | chr       |
-| PD_CD                  | Three digit internal classification code (more granular than Key Code)                                                                                               | int       |
-| PD_DESC                | Description of internal classification corresponding with PD code (more granular than Offense Description)                                                           | chr       |
-| KY_CD                  | Three digit internal classification code (more general category than PD code)                                                                                        | int       |
-| OFNS_DESC              | Description of internal classification corresponding with KY code (more general category than PD description)                                                        | chr       |
-| LAW_CODE               | Law code charges corresponding to the NYS Penal Law, VTL and other various local laws                                                                                | chr       |
-| LAW_CAT_CD             | Level of offense: felony, misdemeanor, violation                                                                                                                     | chr       |
-| ARREST_BORO            | Borough of arrest. B(Bronx), S(Staten Island), K(Brooklyn), M(Manhattan), Q(Queens)                                                                                  | chr       |
-| ARREST_PRECINCT        | Precinct where the arrest occurred                                                                                                                                   | int       |
-| JURISDICTION_CODE      | Jurisdiction responsible for arrest. Jurisdiction codes 0(Patrol), 1(Transit) and 2(Housing) represent NYPD whilst codes 3 and more represent non NYPD jurisdictions | int       |
-| AGE_GROUP              | Perpetrator's age within a category                                                                                                                                  | chr       |
-| PERP_SEX               | Perpetrator's sex description                                                                                                                                        | chr       |
-| PERP_RACE              | Perpetrator's race description                                                                                                                                       | chr       |
-| X_COORD_CD             | Midblock X-coordinate for New York State Plane Coordinate System, Long Island Zone, NAD 83, units feet (FIPS 3104)                                                   | int       |
-| Y_COORD_CD             | Midblock Y-coordinate for New York State Plane Coordinate System, Long Island Zone, NAD 83, units feet (FIPS 3104)                                                   | int       |
-| Latitude               | Latitude coordinate for Global Coordinate System, WGS 1984, decimal degrees (EPSG 4326)                                                                              | num       |
-| Longitude              | Longitude coordinate for Global Coordinate System, WGS 1984, decimal degrees (EPSG 4326)                                                                             | num       |
-| Lon_Lat                | Georeferenced Point Column based on Longitude and Latitude fields                                                                                                    | chr       |
-| Zip.Codes              | Zip code of arrest                                                                                                                                                   | int       |
-| Community.Districts    |                                                                                                                                                                      | int       |
-| Borough.Boundaries     |                                                                                                                                                                      | int       |
-| City.Council.Districts |                                                                                                                                                                      | int       |
-| Police.Precincts       |                                                                                                                                                                      | int       |
++------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------+
+| Column Name            | Description                                                                                                                                                          | Data Type        |
++========================+======================================================================================================================================================================+==================+
+| ARREST_KEY             | Randomly generated persistent ID for each arrest                                                                                                                     | int              |
++------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------+
+| ARREST_DATE            | Exact date of arrest for the reported event                                                                                                                          | chr              |
++------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------+
+| PD_CD                  | Three digit internal classification code (more granular than Key Code)                                                                                               | int              |
++------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------+
+| PD_DESC                | Description of internal classification corresponding with PD code (more granular than Offense Description)                                                           | chr              |
++------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------+
+| KY_CD                  | Three digit internal classification code (more general category than PD code)                                                                                        | int              |
++------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------+
+| OFNS_DESC              | Description of internal classification corresponding with KY code (more general category than PD description)                                                        | chr              |
++------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------+
+| LAW_CODE               | Law code charges corresponding to the NYS Penal Law, VTL and other various local laws                                                                                | chr              |
++------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------+
+| LAW_CAT_CD             | Level of offense: felony, misdemeanor, violation                                                                                                                     | chr              |
++------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------+
+| ARREST_BORO            | Borough of arrest. B(Bronx), S(Staten Island), K(Brooklyn), M(Manhattan), Q(Queens)                                                                                  | chr              |
++------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------+
+| ARREST_PRECINCT        | Precinct where the arrest occurred                                                                                                                                   | int              |
++------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------+
+| JURISDICTION_CODE      | Jurisdiction responsible for arrest. Jurisdiction codes 0(Patrol), 1(Transit) and 2(Housing) represent NYPD whilst codes 3 and more represent non NYPD jurisdictions | int              |
++------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------+
+| AGE_GROUP              | Perpetrator's age within a category                                                                                                                                  | chr              |
++------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------+
+| PERP_SEX               | Perpetrator's sex description                                                                                                                                        | chr              |
++------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------+
+| PERP_RACE              | Perpetrator's race description                                                                                                                                       | chr              |
++------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------+
+| X_COORD_CD             | Midblock X-coordinate for New York State Plane Coordinate System, Long Island Zone, NAD 83, units feet (FIPS 3104)                                                   | int              |
++------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------+
+| Y_COORD_CD             | Midblock Y-coordinate for New York State Plane Coordinate System, Long Island Zone, NAD 83, units feet (FIPS 3104)                                                   | int              |
++------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------+
+| Latitude               | Latitude coordinate for Global Coordinate System, WGS 1984, decimal degrees (EPSG 4326)                                                                              | num              |
++------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------+
+| Longitude              | Longitude coordinate for Global Coordinate System, WGS 1984, decimal degrees (EPSG 4326)                                                                             | num              |
++------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------+
+| Lon_Lat                | Georeferenced Point Column based on Longitude and Latitude fields                                                                                                    | chr              |
++------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------+
+| Zip.Codes              | Zip code of arrest                                                                                                                                                   | int              |
++------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------+
+| Community.Districts    |                                                                                                                                                                      | int              |
++------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------+
+| Borough.Boundaries     |                                                                                                                                                                      | int              |
++------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------+
+| City.Council.Districts |                                                                                                                                                                      | int              |
++------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------+
+| Police.Precincts       |                                                                                                                                                                      | int              |
++------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------+
 
 ```{r}
 data_2022 <- read.csv("https://raw.githubusercontent.com/suswong/DATA-607-Final-Project/main/NYPD_Arrests_Data__Historic_-2022.csv", header = T, na.strings = "NA")
@@ -105,7 +132,9 @@ Below are some of things that needs to be tidied for the analysis:
 
 ### Remove Duplicates
 
-Each crime has a randomly generated persistent ID. They are recorded in the 'ARREST_KEY' column. Below is code that removes another duplicates based on the ID. 
+Each crime has a randomly generated persistent ID.
+They are recorded in the 'ARREST_KEY' column.
+Below is code that removes another duplicates based on the ID.
 
 ```{r}
 data_2018_2022 <- subset(data_2018_2022, !duplicated(data_2018_2022$ARREST_KEY))
@@ -180,8 +209,12 @@ data_2018_2022$MONTH <- months(data_2018_2022$ARREST_DATE, abbreviate=TRUE)
 
 ### Missing Values
 
+Missing values like location or crime tpye cannot be computed.
+So depending on the number of missing values, they will be ommitted.
 Use `colSums(is.na())` to check for missing values.
-There are 2093 missing values in the 'Zip.Codes' column.
+Use `is.na()` or `complete.cases()` to deal with missing values.
+There are missing values in the crime description column.
+It will need to be manually adjusted.
 
 ```{r}
 colSums(is.na(data_2018_2022))
@@ -206,7 +239,11 @@ dplyr::distinct(data_2018_2022)
 
 ### Group similar crimes
 
-There are 78 crime types. We can combine some of the crimes into one type as some are similar. For example there are crime type called "CHILD ABANDONMENT/NON SUPPORT" and "CHILD ABANDONMENT/NON SUPPORT 1". They could be mislabeled. Create a new column to group similar crime types. 
+There are 78 crime types.
+We can combine some of the crimes into one type as some are similar.
+For example there are crime type called "CHILD ABANDONMENT/NON SUPPORT" and "CHILD ABANDONMENT/NON SUPPORT 1".
+They could be mislabeled.
+Create a new column to group similar crime types.
 
 ```{r}
 table(data_2018_2022$OFNS_DESC)
@@ -314,9 +351,12 @@ str(population_boro)
 population_boro$Population_Census_2020 <- as.numeric(gsub(",","",population_boro$Population_Census_2020))
 ```
 
-# Interactive Map Visusalization
+# Map Visualization {.tabset}
 
-Here we have an interactive map of all arrests made in New York from 2018-2022. 
+## Interactive Map Visusalization
+
+Here we have an interactive map of all arrests made in New York from 2018-2022.
+Viewers can view the distribution of the arrests in the five boroughs.
 
 ```{r, message=FALSE}
 library(dplyr)
@@ -340,77 +380,48 @@ arrests_map <- arrests %>%
 arrests_map
 ```
 
-# Daily Crimes in New York from 2018 – 2022
+## Density Map
 
-Overall, there is a decrease in the number of crimes from 2018 to mid 2020 and a increase in the number of crimes from mid 2020 to end of 2022. 
-```{r, message=FALSE}
-crime_daily <- data_2018_2022 %>%
-  group_by(ARREST_DATE) %>%
-  summarize(count = n()) %>%
-  arrange(ARREST_DATE)
+```{r}
+library(ggmap)
+api <- rstudioapi::askForPassword("Database password")
+register_google(key= api)
 
-library(ggplot2)
-library(scales)
-ggplot(crime_daily, aes(x = ARREST_DATE, y = count)) +
-  geom_line(color = "#F2CA27", size = 0.1) +
-  geom_smooth(color = "#1A1A1A") +
-  # fte_theme() +
-  scale_x_date(breaks = date_breaks("1 year"), labels = date_format("%Y")) +
-  labs(x = "Date of Crime", y = "Number of Crimes", title = "Daily Crimes in New York from 2018 – 2022")
+crime <- data_2018_2022
 
-```
+nyc_map <- ggmap(get_map(location =  c(min(crime$Longitude),
+                               min(crime$Latitude),
+                               max(crime$Longitude),
+                               max(crime$Latitude)), zoom = 11, scale = 2, maptype = "terrain", color = 'color'))
 
-## Trends in Crime of During the Week Per Year
 
-Based on the graph, there seems to be more crimes in the middle of the week for each year. In each year, the number of arrests peaks on Wednesday. 
-
-```{r, message=FALSE}
-library(gganimate)
-library(gifski)
-
-days_trend <- data_2018_2022 %>%
-  group_by(DAY,YEAR) %>%
-  summarise(count = n())
-
-p <- days_trend %>%
-  group_by(YEAR) %>%
-    ggplot(., aes(x = DAY, y = count, fill = DAY)) + 
-    geom_bar(stat = "identity", show.legend = FALSE) +
-    labs(title = "Year: {closest_state}") +
-    xlab("Day of week") +
-    ylab("Number of crimes")
-
-a <- p +
-    transition_states(YEAR, wrap = FALSE)
-animate(a, nframes = 5, fps = 0.5)
+nyc_map + stat_density2d(aes(x = Longitude, y = Latitude, fill = ..level..), alpha = .1, bins = 50, data = crime, geom = "polygon")+
+  scale_fill_viridis_c(option = "plasma") +
+facet_wrap(~ YEAR)
 
 ```
 
-## Trends in Crime for Months of Each Year
+### Arrest in 2022
 
-Year 2020 crime trends differs the most compared to the other years. It may be related to the COVID outbreak in 2020 which led to a NY lockdown in March. 
+```{r}
+library(ggmap)
 
-```{r, message=FALSE, warning=FALSE}
-month_trend <- data_2018_2022 %>%
-  dplyr::group_by(month,YEAR) %>%
-  dplyr::summarise(count = n()) 
+crime <- data_2022
 
-p <- month_trend %>%
-  group_by(YEAR) %>%
-    ggplot(., aes(x = reorder(month, month), y = count, fill = month)) + 
-    geom_bar(stat = "identity", show.legend = FALSE) +
-    labs(title = "Year: {closest_state}") +
-    xlab("Month") +
-    ylab("Number of crimes")
+nyc_map <- ggmap(get_map(location = "New York City", zoom = 11, scale = 2, maptype = "terrain", color = 'color'))
 
-a <- p +
-    transition_states(YEAR, wrap = FALSE)
-animate(a, nframes = 5, fps = 0.5)
+
+nyc_map + stat_density2d(aes(x = Longitude, y = Latitude, fill = ..level..), alpha = .1, bins = 50, data = crime, geom = "polygon")+
+  scale_fill_viridis_c(option = "plasma")
+
 ```
 
 # Levels of Offense
 
-```{r}
+Majority of the arrests are misdemeanor.
+More than 50% are misdemeanor.
+
+```{r, message=FALSE}
 library(kableExtra)
 Leveloffense <- data_2018_2022 %>%
   filter(LAW_CAT_CD  %in% c("Misdemeanor","Felony", "Violation")) %>%
@@ -420,14 +431,22 @@ Leveloffense <- data_2018_2022 %>%
   arrange(desc(percentage))
 
 Leveloffense$percentage <- scales::percent(Leveloffense$percentage, accuracy = 1) 
-kable(Leveloffense, col.names = c("Level", "Total Arrest","Percentage"))
+
+Leveloffense%>%
+  kable(digits = 1, format.args = list(big.mark = ","),
+             col.names = c("Level", "Total Arrest","Percentage"),
+             caption="Total arrests by level of offense from 2018-2022.") %>%
+  kable_styling(full_width = FALSE, bootstrap_options = "striped")
 ```
 
 # Demographic of Perpetraitor in Each Borough
 
 ## Gender
 
+In each borough, about 80% of the perpetrator is male and about 20% are female.
+
 ```{r, message=FALSE}
+library(ggplot2)
 gender <- data_2018_2022 %>%
   group_by(PERP_SEX, ARREST_BORO)%>%
   summarise(count = n())
@@ -446,10 +465,11 @@ ggplot(gender, aes (x = factor(percentage), y = percentage, fill = PERP_SEX))+
 
 ```
 
-
 ## Age Group
 
-```{r}
+The most common perpetrators are in the age range 25-44 years old and male.
+
+```{r, message=FALSE}
 Agegroup <- data_2018_2022 %>%
    dplyr::group_by(AGE_GROUP, PERP_SEX)%>%
   dplyr::summarise(count = n()) %>%
@@ -490,11 +510,96 @@ ggplot(race_by_borough, aes (x = factor(percentage), y = percentage, fill = PERP
 
 ```
 
+# Trends
+
+## Daily Crimes in New York from 2018 -- 2022
+
+Overall, there is a decrease in the number of crimes from 2018 to mid 2020 and a increase in the number of crimes from mid 2020 to end of 2022.
+
+```{r, message=FALSE}
+crime_daily <- data_2018_2022 %>%
+  group_by(ARREST_DATE) %>%
+  summarize(count = n()) %>%
+  arrange(ARREST_DATE)
+
+library(ggplot2)
+library(scales)
+ggplot(crime_daily, aes(x = ARREST_DATE, y = count)) +
+  geom_line(color = "#F2CA27", size = 0.1) +
+  geom_smooth(color = "#1A1A1A") +
+  # fte_theme() +
+  scale_x_date(breaks = date_breaks("1 year"), labels = date_format("%Y")) +
+  labs(x = "Date of Crime", y = "Number of Crimes", title = "Daily Crimes in New York from 2018 – 2022")
+
+```
+
+## Trends in Crime of During the Week Per Year
+
+Based on the graph, there seems to be more crimes in the middle of the week for each year.
+In each year, the number of arrests peaks on Wednesday.
+
+```{r, message=FALSE}
+library(gganimate)
+library(gifski)
+
+days_trend <- data_2018_2022 %>%
+  group_by(DAY,YEAR) %>%
+  summarise(count = n())
+
+p <- days_trend %>%
+  group_by(YEAR) %>%
+    ggplot(., aes(x = DAY, y = count, fill = DAY)) + 
+    geom_bar(stat = "identity", show.legend = FALSE) +
+    labs(title = "Year: {closest_state}") +
+    xlab("Day of week") +
+    ylab("Number of crimes")
+
+a <- p +
+    transition_states(YEAR, wrap = FALSE)
+animate(a, nframes = 5, fps = 0.5)
+
+```
+
+## Trends in Crime for Months of Each Year
+
+Year 2020 crime trends differs the most compared to the other years.
+It may be related to the COVID outbreak in 2020 which led to a NY lockdown in March.
+In 2020, there was a decrease in the number of arrest from January to April, and a sharp increase in May.
+By October 2022, the number of crimes return back to pre covid (prior 2020) levels.
+
+```{r, message=FALSE, warning=FALSE}
+month_trend <- data_2018_2022 %>%
+  dplyr::group_by(month,YEAR) %>%
+  dplyr::summarise(count = n()) 
+
+p <- month_trend %>%
+  group_by(YEAR) %>%
+    ggplot(., aes(x = reorder(month, month), y = count, fill = month)) + 
+    geom_bar(stat = "identity", show.legend = FALSE) +
+    labs(title = "Year: {closest_state}") +
+    xlab("Month") +
+    ylab("Number of crimes")
+
+a <- p +
+    transition_states(YEAR, wrap = FALSE)
+animate(a, nframes = 5, fps = 0.5)
+
+# month_trend <- data_2018_2022 %>%
+#   dplyr::group_by(month,YEAR) %>%
+#   dplyr::summarise(count = n()) 
+# 
+# month_trend$YEAR <- as.character(month_trend$YEAR)
+# 
+# ggplot(month_trend, aes(x = month, y = count, colour = YEAR)) +
+#   geom_line() + scale_y_continuous(labels = function(x) format(x, scientific = FALSE)) + ggtitle("Total Arrests Per Year")
+```
+
 # Top 10 Offenses in NY {.tabset}
 
 ## Datatable
 
-Out of all the offenses, assault 3 & related offenses is the highest. 
+Out of all the offenses, assault is the highest, followed by petit larceny, drugs, and vehicle and traffic laws.
+
 ```{r, message=FALSE}
 library(DT)
 library(dplyr)
@@ -516,8 +621,9 @@ offense3 <- merge(x=offense2,y=offense,
 datatable(offense3)
 ```
 
+## Visualization {.tabset}
 
-## Visualization
+Out of all the offenses, assault is the highest, followed by petit larceny, drugs, and vehicle and traffic laws.
 
 ```{r, message=FALSE}
 library(ggplot2)
@@ -530,7 +636,100 @@ offense %>%
   ggtitle("Top 10 Offense in NY")
 ```
 
-### Number of Arrests for Top 10 Crimes Daily Per Year
+## Changes in Crime By Year
+
+From the graph, arrests related to assaults continues to be the highest crime from 2018 to 2022.
+The number of arrests for each crime decreases from 2018 to 2022.
+Arrests related to drugs was the second highest in 2018.
+However, arrests related to petit larceny is the second highest in 2022.
+There are more fraud related cases in 2022 than in 2018.
+
+```{r, message=FALSE}
+crime <- data_2018_2022 %>%
+  dplyr::group_by(YEAR, ARREST_BORO, crime) %>%
+  dplyr::summarise(count = n()) 
+
+# Create a new column for the population size for each borough
+crime$population <- 
+  with(crime, ifelse(ARREST_BORO == "Brooklyn", population_boro[2,2],
+                         ifelse(ARREST_BORO == "Bronx", population_boro[1,2],
+                        ifelse(ARREST_BORO == "Queens", population_boro[4,2],
+                         ifelse(ARREST_BORO == "Manhattan", population_boro[3,2],population_boro[5,2]      )))))
+
+# Rename column names
+colnames(crime) <- c("Year" ,"Borough", "crime","count", "population")
+
+# Calculate the crime rate per year and borough
+crime <- crime %>%
+  mutate(crime_rate = (count/population)*10000)
+
+h <- crime %>%
+  filter(crime %in% c("ASSAULT","PETIT LARCENY","DRUG","FELONY ASSAULT","MISCELLANEOUS PENAL LAW" ,"VEHICLE AND TRAFFIC LAWS", "CRIMINAL MISCHIEF & RELATED OFFENSES" ,"ROBBERY","GRAND LARCENY" , "DANGEROUS WEAPONS","FRAUD"))%>%
+  group_by(Year, crime) %>%
+  summarise(crime_rate = sum(crime_rate))
+
+ggplot(h, aes(x = Year, y = crime_rate, colour = crime)) +
+  geom_line() + scale_y_continuous(labels = function(x) format(x, scientific = FALSE)) + ggtitle("Changes in Crime By Year")
+```
+
+## Daily Trend for Top 10 Crimes
+
+Early we noted that the total number arrest peak on Wednesday for each year from 2018 to 2022.
+However, on analyzing the daily trends of the top ten crimes, not all crimes peak on Wednesday.
+
++--------------------------------------+--------------------------------------------------------------------------+
+| Crime                                | Daily Trend                                                              |
++======================================+==========================================================================+
+| ASSAULT                              | **Highest Count Daily**                                                  |
+|                                      |                                                                          |
+|                                      | Increase from Sunday to Wednesday and decrease after (Peak on Wednesday) |
++--------------------------------------+--------------------------------------------------------------------------+
+| PETIT LARCENY                        | Increase from Sunday to Wednesday and decrease after (Peak on Wednesday) |
++--------------------------------------+--------------------------------------------------------------------------+
+| **DRUG**                             | **Higher counts from Wednesday to Saturday**                             |
++--------------------------------------+--------------------------------------------------------------------------+
+| MISCELLANEOUS PENAL LAW              | Increase from Sunday to Wednesday and decrease after (Peak on Wednesday) |
++--------------------------------------+--------------------------------------------------------------------------+
+| **VEHICLE AND TRAFFIC LAWS**         | **Looks almost constant throughout the week**                            |
++--------------------------------------+--------------------------------------------------------------------------+
+| CRIMINAL MISCHIEF & RELATED OFFENSES | Increase from Sunday to Wednesday and decrease after (Peak on Wednesday) |
++--------------------------------------+--------------------------------------------------------------------------+
+| ROBBERY                              | Increase from Sunday to Wednesday and decrease after (Peak on Wednesday) |
++--------------------------------------+--------------------------------------------------------------------------+
+| GRAND LARCENY                        | Increase from Sunday to Wednesday and decrease after (Peak on Wednesday) |
++--------------------------------------+--------------------------------------------------------------------------+
+| **DANGEROUS WEAPONS**                | **Higher counts from Wednesday to Saturday**                             |
++--------------------------------------+--------------------------------------------------------------------------+
+| FRAUD                                | Increase from Sunday to Wednesday and decrease after                     |
++--------------------------------------+--------------------------------------------------------------------------+
+
+```{r, message=FALSE}
+library(gganimate)
+library(gifski)
+
+crime_trend <- data_2018_2022 %>%
+  filter(crime %in% c("ASSAULT","PETIT LARCENY","DRUG","FELONY ASSAULT","MISCELLANEOUS PENAL LAW" ,"VEHICLE AND TRAFFIC LAWS", "CRIMINAL MISCHIEF & RELATED OFFENSES" ,"ROBBERY","GRAND LARCENY" , "DANGEROUS WEAPONS","FRAUD")) %>%
+  group_by(crime,DAY) %>%
+  summarise(count = n())
+
+p <- crime_trend %>%
+  group_by(crime) %>%
+    ggplot(., aes(x = DAY, y = count, fill = DAY)) + 
+    geom_bar(stat = "identity", show.legend = FALSE) +
+    labs(title = "Crime: {closest_state}") +
+    xlab("Day of week") +
+    ylab("Number of crimes")
+
+a <- p +
+    transition_states(crime, wrap = FALSE)
+animate(a, nframes = 10, fps = 0.5)
+
+```
+
+## Number of Arrests for Top 10 Crimes Daily Per Year
+
+From the animation, we can see assault related arrests remains the highest from 2018 to 2022.
+Besides assault, petit larcenry stood out the most from 2020 - 2022.
 
 ```{r, message=FALSE}
 qw <- data_2018_2022 %>%
@@ -566,7 +765,9 @@ This will allow us to compare crime rates on an equal basis across different bor
 
 ## Datatable
 
-Below is a table of the crime rate per 100000 people for each borough and year. In all years except 2019, Queens has the lowest crime rate per 100000 people. Bronx has the highest crime per 10000 people for all years except in 2021. 
+Below is a table of the crime rate per 100000 people for each borough and year.
+In all years except 2019, Queens has the lowest crime rate per 100000 people.
+Bronx has the highest crime per 10000 people for all years except in 2021.
 
 ```{r, message=FALSE}
 # Count the number of arrests in each borough by year
@@ -593,17 +794,20 @@ datatable(borough_by_year,options = list(pageLength = 5, dom = 'tip'))
 
 ## Visualization
 
-In all years except 2019, Queens has the lowest crime rate per 10000 people. Bronx has the highest crime per 10000 people for all years except in 2021. 
+In all years except 2019, Queens has the lowest crime rate per 10000 people.
+Bronx has the highest crime per 10000 people for all years except in 2021.
 
-All of the boroughs follow a similar trend of a decrease of crime rate from 2018 to 2020 and an overall increase after. 
+All of the boroughs follow a similar trend of a decrease of crime rate from 2018 to 2020 and an overall increase after.
 
 ```{r, message=FALSE, warning=FALSE}
 ggplot(borough_by_year, aes(x = Year, y = crime_rate, colour = Borough)) +
   geom_smooth() + scale_y_continuous(labels = function(x) format(x, scientific = FALSE)) + ggtitle("Crime Rate Per 10000 People")
 ```
 
-
 ## Top Offense Per Borough {.tabset}
+
+Below is an animation of top offense for each borough, based on the percentage of arrest crime type in each borough.
+Assault related arrest remains to be the highest in all borough.
 
 ```{r, message=FALSE}
 crime_by_borough <- data_2018_2022 %>%
@@ -653,6 +857,9 @@ animate(a, nframes = 5, fps = 0.5)
 
 ### Trends of Top 10 Crimes in Manhattan
 
+For all boroughs, the highest arrest is related to assault.
+However, compared to the boroughs, the number of petit larcerny arrests sotod out the most in Manhattan.
+
 ```{r, warning=FALSE, message=FALSE}
 temp100 <- qw %>%
   group_by(ARREST_DATE, ARREST_BORO, crime)%>%
@@ -661,7 +868,8 @@ temp100 <- qw %>%
 temp100  %>%
   filter(ARREST_BORO=="Manhattan") %>%
   ggplot(aes(ARREST_DATE, total, colour = crime)) +
-  geom_smooth()
+  geom_smooth() + 
+  ggtitle("Trends of Top 10 Crimes in Manhattan")
 ```
 
 ### Trends of Top 10 Crimes in Brooklyn
@@ -670,7 +878,8 @@ temp100  %>%
 temp100  %>%
   filter(ARREST_BORO=="Brooklyn") %>%
   ggplot(aes(ARREST_DATE, total, colour = crime)) +
-  geom_smooth()
+  geom_smooth() + 
+  ggtitle("Trends of Top 10 Crimes in Brooklyn")
 ```
 
 ### Trends of Top 10 Crimes in Bronx
@@ -680,17 +889,22 @@ temp100  %>%
 temp100  %>%
   filter(ARREST_BORO=="Bronx") %>%
   ggplot(aes(ARREST_DATE, total, colour = crime)) +
-  geom_smooth()
+  geom_smooth()+ 
+  ggtitle("Trends of Top 10 Crimes in Bronx")
 
 ```
 
 ### Trends of Top 10 Crimes in Staten Island
 
+By 2022, the next highest number of arrests is related to Vehicle and traffic laws.
+This crime type stood out the most in Staten Island compared to other boroughs.
+
 ```{r, warning=FALSE, message=FALSE}
 temp100  %>%
   filter(ARREST_BORO=="Staten Island") %>%
   ggplot(aes(ARREST_DATE, total, colour = crime)) +
-  geom_smooth()
+  geom_smooth() + 
+  ggtitle("Trends of Top 10 Crimes in Staten Island")
 ```
 
 ### Trends of Top 10 Crimes in Queens
@@ -699,12 +913,19 @@ temp100  %>%
 temp100  %>%
   filter(ARREST_BORO=="Queens") %>%
   ggplot(aes(ARREST_DATE, total, colour = crime)) +
-  geom_smooth()
+  geom_smooth()+ 
+  ggtitle("Trends of Top 10 Crimes in Queens")
 ```
 
-
-
 # Changes in Crime Rate from 2018 - 2022 {.tabset}
+
+Compare the normalized crime rate of 2018 and 2022.
+Compare the normalized crime rate of 2021 and 2022.
+There is still a decrease in crime rate in all borough.
+Brooklyn has the highest percentage decrease of crime rate.
+However, it was noted that there was a trend of decrease in the number of arrests from 2018 to mid 2020 and a increase in the number of arrests from mid 2020 to end of 2022.
+So comparing the crime rate in 2021 and 2022, all borough shows an increase of crime rate.
+Bronx has the highest percentage of increase in crime rate and Staten Island has the lowest percentage of increase in crime rate.
 
 ```{r}
 arrests_2018 <- borough_by_year %>%
@@ -732,25 +953,178 @@ arrests_combined2018_2022$`% Change from 2021 to 2022` <- (arrests_combined2018_
 
 datatable(arrests_combined2018_2022)
 ```
-# Conclusion 
+
+# ANOVA
+
+Are there any significant differences between the crime rates of each borough?
+
+Null hypothesis: the means of the 5 borough crime rates are the same
+
+Alternative hypothesis: At least one borough crime rates mean is not equal to the others.
+
+## Calculate the summary statistics by Borough
+
+```{r}
+levels(as.factor(borough_by_year$Borough))
+
+group_by(borough_by_year, Borough) %>%
+  summarise(
+    count = n(),
+    mean = mean(crime_rate, na.rm = TRUE),
+    sd = sd(crime_rate, na.rm = TRUE)
+  )
+```
+
+## One-Way ANOVA Test
+
+We want to see if the average crime rate of the boroughs vary significantly.
+We can conclude that there are significant differences between the boroughs in the model summary because the p-value is less than the significance level.
+
+```{r}
+res.aov <- aov(crime_rate ~ Borough, data = borough_by_year)
+
+summary(res.aov)
+```
+
+## Pairwise comparisons
+
+### Multiple Tukey pairwise comparisons
+
+We want to check which pair of borough average crime rates is significantly different.
+The R function `TukeyHSD()` will compute numerous pairwise comparisons between the boroughs.
+
+Below is the output of Tukey's multiple comparisons of means test with a 95% family-wise confidence level.
+The table shows the differences in crime rates between pairs of boroughs, along with the lower and upper bounds of the confidence interval and the p-values adjusted for multiple comparisons.
+
+For example, the first row "Brooklyn-Bronx" indicates that the crime rate in Brooklyn is significantly lower than in the Bronx, with a difference of -103.297229 (per some unit) and a p-value of 0.0309524.
+
+Based on the adjusted p-value (last column),the difference between Queens and Bronx, and the difference between Staten Island and Bronx are significant.
+
+```{r}
+TukeyHSD(res.aov)
+```
+
+## Check Validy of ANOVA assumption
+
+### Variance homogeneity
+
+Points 1, 3, and 13 are outliers.
+There is no evidence of relationship between the residuals and borough mean crime rates.
+
+```{r}
+plot(res.aov, 1)
+```
+
+We can also use Levene's test to check if the variance across borough crime rates is statistically significant.
+The p-value 0.3621 is not less than the significance value.
+We can infer the assumption of variance homogeneity is met.
+
+```{r, message=FALSE, warning=FALSE}
+library(car)
+leveneTest(crime_rate ~ Borough, data = borough_by_year)
+
+```
+
+### Normality
+
+All of the points lies roughly on the line.
+The assumption of normality is met.
+
+```{r}
+plot(res.aov, 2)
+```
+
+We can also use Shapiro-Wilk normality test.
+
+The test statistic, W, is a value between 0 and 1.
+A value close to 1 suggests that the data is close to being normally distributed.
+The calculated value of W is 0.97532, indicating that the residuals are reasonably close to a normal distribution.
+
+The p-value is a measure of evidence against the null hypothesis of normality.
+A p-value (0.7797) larger than the significance level.
+Therefore, there is no strong evidence to suggest that the residuals deviate significantly from a normal distribution.
+
+The assumption of normality is met.
+
+```{r}
+aov_residuals <- residuals(object = res.aov )
+shapiro.test(x = aov_residuals )
+```
+
+# Conclusion
 
 **Trends**
 
 Overall, there is a decrease in the number of arrests from 2018 to mid 2020 and a increase in the number of arrests from mid 2020 to end of 2022.
 
-There seems to be more arrests in the middle of the week for each year. In each year, the total number of arrests peaks on Wednesday, which can mean there are higher activity of crimes during the middle of the week. 
+There seems to be more arrests in the middle of the week for each year.
+In each year, the total number of arrests peaks on Wednesday, which can mean there are higher activity of crimes during the middle of the week.
+However, on analyzing the daily trends of the top ten crimes, not all crimes peak on Wednesday.
+Among the top 10 crimes, the number of arrest related to petit larceny, criminal mischief, robbery, grand larceny, and fraud peak on Wednesday.
+The number of arrest related to drug and dangerous drug has higher counts from Wednesday to Saturday.
+The number of arrest related to vehicle and traffic laws is almost constant throughout the week with higher counts on the weekend.
 
-The top 3 highest crime type based on the number of arrests are: assault, petit larceny, and drug. 
+The top 3 highest crime type based on the number of arrests are: assault, petit larceny, and drug.
 
 **Crime Rate**
-The crime rate for each borough is calculated by dividing the number of arrests in each borough by its population. This will allow us to compare crime rates on an equal basis across different boroughs.
-In all years except 2019, Queens has the lowest crime rate per 100000 people. Bronx has the highest crime per 10000 people for all years except in 2021. Comparing the crime rate in 2018 and 2022, there is still a decrease in crime rate in all borough. Brooklyn has the highest percentage decrease of crime rate. However, it was noted that there was a trend of decrease in the number of arrests from 2018 to mid 2020 and a increase in the number of arrests from mid 2020 to end of 2022. So comparing the crime rate in 2021 and 2022, all borough shows an increase of crime rate. Bronx has the highest percentage of increase in crime rate and Staten Island has the lowest percentage of increase in crime rate. 
 
+The crime rate for each borough is calculated by dividing the number of arrests in each borough by its population.
+This will allow us to compare crime rates on an equal basis across different boroughs.
+
+Although Staten Island has the lowest number of arrest, Queens has the lowest crime rate per 100000 people.
+Bronx has the highest crime per 10000 people for all years except in 2021.
+
+Comparing the crime rate in 2018 and 2022, there is still a decrease in crime rate in all borough.
+
+Brooklyn has the highest percentage decrease of crime rate.
+However, it was noted that there was a trend of decrease in the number of arrests from 2018 to mid 2020 and a increase in the number of arrests from mid 2020 to end of 2022.
+So comparing the crime rate in 2021 and 2022, all borough shows an increase of crime rate.
+Bronx has the highest percentage of increase in crime rate and Staten Island has the lowest percentage of increase in crime rate.
+
+**Which borough is the safest based on the crime rate?**
+
+Based on these observation, Staten Island and Queens are the safest boroughs.
 
 **Limitations**
-There is only data of New York States Census for every 10 years. The last recorded data was 2020. To normalized the crime rate, population data was used to calculate the crime rate. If the population size was available for each year, a more accurate crime rate can be calculated. 
 
+There is only data of New York States Census for every 10 years.
+The last recorded data was 2020.
+To normalized the crime rate, population data was used to calculate the crime rate.
+If the population size was available for each year, a more accurate crime rate can be calculated.
+
+It is also important to note the number of arrests may not reflect the number of crimes in NY completely.
+Most often, crimes are unreported, crimes are made as complaints but no arrest made, and more.
+
+# Challenges
+
+**Mapping**
+
+My original intention was to plot the density of crime by zip codes to show which zip codes has the lowest and highest crime rate.
+I have tried to use shapefiles to create a choropleth map.
+However, my attempts were not successful.
+
+During the process of creating the maps, the code I was running caused R to not respond.
+I did save the r markdown.
+However, it was saved locally on my laptop.
+So when I restarted R and reopen the markdown file, it caused R to not respond again.
+I had to restart the project and all codes due to the markdown file was inaccessible.
+This happened twice.
+Luckily for the second time, I saved the markdown file to github so I can re-access any previous work made.
+
+**Time Series Analysis/Forecast**
+
+I was able to start this analysis.
+However, due to time constraint and the challenges mentioned earlier, I have not learned how to validate the code/model I have.
+
+# Further Enhancement/ Other Analysis 
+1. While crime rates are essential indicators, other factors contribute to the overall safety of a borough. Factors such as access to healthcare, quality of schools, presence of community programs, and socioeconomic factors can also influence the overall safety and well-being of an area. Use regression analysis to examine the relationship between the number of arrests and other variables, such as demographic characteristics of the neighborhoods, unemployment rate, and etc.
+
+2. Perform geospatial analysis to map crime hotspots within each borough using latitude and longitude coordinates or zip codes. This will provide a spatial understanding of crime distribution and potentially highlight areas with higher or lower crime rates.
+
+3. Time Series Analysis: Predict the level of crime in different neighborhoods based on historical data and other variables. This can help identify which neighborhoods are likely to have higher or lower levels of crime in the future.
 
 # Source
 
-1.  Interactive map <https://crimebythenumbers.com/choropleth-maps.html> <https://walker-data.com/census-r/mapping-census-data-with-r.html> <https://justinmorganwilliams.medium.com/basics-of-gis-mapping-with-r-using-grow-nyc-markets-75adcdd9b0> <https://cengel.github.io/R-spatial/mapping.html> <https://rpubs.com/schwarja209/NYC_hotspots>
+1.  Mapping <https://crimebythenumbers.com/choropleth-maps.html> <https://walker-data.com/census-r/mapping-census-data-with-r.html> <https://justinmorganwilliams.medium.com/basics-of-gis-mapping-with-r-using-grow-nyc-markets-75adcdd9b0> <https://cengel.github.io/R-spatial/mapping.html> <https://rpubs.com/schwarja209/NYC_hotspots> <https://journal.r-project.org/archive/2013-1/kahle-wickham.pdf>
+
+2.  ANOVA <https://www.r-bloggers.com/2022/05/one-way-anova-example-in-r-quick-guide/>
